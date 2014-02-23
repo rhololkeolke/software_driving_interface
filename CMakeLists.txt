@@ -162,3 +162,9 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+include_directories(include ${catkin_INCLUDE_DIRS})
+
+add_executable(gasTalker src/gasTalker.cpp)
+target_link_libraries(gasTalker ${catkin_LIBRARIES})
+add_dependencies(gasTalker ${catkin_EXPORTED_TARGETS})
