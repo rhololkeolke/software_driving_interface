@@ -168,3 +168,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 add_executable(gasTalker src/gasTalker.cpp)
 target_link_libraries(gasTalker ${catkin_LIBRARIES})
 add_dependencies(gasTalker ${catkin_EXPORTED_TARGETS})
+
+add_executable(simListener src/simListener.cpp)
+target_link_libraries(simListener ${catkin_LIBRARIES})
+add_dependencies(simListener ${catkin_EXPORTED_TARGETS})
