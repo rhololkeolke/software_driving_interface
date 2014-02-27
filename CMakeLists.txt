@@ -172,3 +172,7 @@ add_dependencies(gasTalker ${catkin_EXPORTED_TARGETS})
 add_executable(simListener src/simListener.cpp)
 target_link_libraries(simListener ${catkin_LIBRARIES})
 add_dependencies(simListener ${catkin_EXPORTED_TARGETS})
+
+add_executable(SDI src/SDI.cpp)
+target_link_libraries(SDI ${catkin_LIBRARIES})
+add_dependencies(SDI ${catkin_EXPORTED_TARGETS})
