@@ -14,7 +14,7 @@ def talker():
       msg.wheel_angle = 1.0 # radians
       msg.gas_pos = 0.4
       msg.brake_pos = 0.0
-      msg.gear = 3 # drive
+      msg.gear = 1 # drive
       msg.vibration = 0.0
 
       # Print to screen and log

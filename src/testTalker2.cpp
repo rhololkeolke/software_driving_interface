@@ -20,11 +20,11 @@ namespace sdi
 
       void extractMsgValues(const software_driving_interface::HDI_control::ConstPtr& msg)
       {
-         this->gasPedalPercentMsg.data = 1;
-         this->brakePedalPercentMsg.data = 0;
-         this->wheelAngleMsg.data = -3.14;
+         this->gasPedalPercentMsg.data = msg->gas_pos;
+         this->brakePedalPercentMsg.data = msg->brake_pos;
+         this->wheelAngleMsg.data = msg->wheel_angle;
          this->handBrakePercentMsg.data = 0;
-         this->directionValueMsg.data = 1;
+         this->directionValueMsg.data = msg->gear;
          this->keyValueMsg.data = 1;
 
          messageProcessed = true;
@@ -56,7 +56,7 @@ namespace sdi
             if (messageProcessed)
             {
                messageProcessed = false;
-               pubKeyCmd.publish(keyValueMsg);
+//               pubKeyCmd.publish(keyValueMsg);
                pubHandBrakeCmd.publish(handBrakePercentMsg);
                pubGasPedalCmd.publish(gasPedalPercentMsg);
                pubHandWheelCmd.publish(wheelAngleMsg); 
