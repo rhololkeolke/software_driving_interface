@@ -1,0 +1,4 @@
+<launch>
+   <node name="SDI_listener" pkg="software_driving_interface" type="SDI_Listener" />
+   <node name="SDI_talker"   pkg="software_driving_interface" type="SDI_Talker"   />
+</launch>

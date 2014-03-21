@@ -181,3 +181,6 @@ add_executable(SDI_Listener src/testTalker2.cpp)
 target_link_libraries(SDI_Listener ${catkin_LIBRARIES})
 add_dependencies(SDI_Listener ${catkin_EXPORTED_TARGETS})
 
+add_executable(SDI_Talker src/testListener.cpp)
+target_link_libraries(SDI_Talker ${catkin_LIBRARIES})
+add_dependencies(SDI_Talker ${catkin_EXPORTED_TARGETS})
