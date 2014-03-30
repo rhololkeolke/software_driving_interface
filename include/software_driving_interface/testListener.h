@@ -10,6 +10,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"
+#include "std_msgs/Int8.h"
 #include "software_driving_interface/HDI_feedback.h"
 //#include "driving_msgs/HDI_feedback.h"
 
@@ -29,7 +30,7 @@ namespace sdi
 
       void setWheelForce(const std_msgs::Float64::ConstPtr& msg);
 
-      void setVibration(const std_msgs::Float64::ConstPtr& msg);
+      void setVibration(const std_msgs::Int8::ConstPtr& msg);
 
    }; // end of SDI_Talker class
 } // end of sdi namespace

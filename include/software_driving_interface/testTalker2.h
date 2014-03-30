@@ -12,7 +12,8 @@
 #include "std_msgs/Int8.h"
 #include "std_msgs/Float64.h"
 #include "software_driving_interface/HDI_control.h"
-
+#include <string>
+using namespace std;
 //#include "driving_msgs/HDI_control.h"
 
 
@@ -66,7 +67,8 @@ namespace sdi
 
       void validateMsgInput();
       void logMessage(const software_driving_interface::HDI_control::ConstPtr& msg);
-
+      void logOutboundMessage(string* topic, const std_msgs::Int8::ConstPtr& msg);
+      void logOutboundMessage(string* topic, const std_msgs::Float64::ConstPtr& msg);
 
    }; // end of SDI_Listener class
 

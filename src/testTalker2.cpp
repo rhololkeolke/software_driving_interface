@@ -160,6 +160,19 @@ int SDI_Listener::run(int argc, char **argv)
 	return 0;
 }
 
+void SDI_Listener::logOutboundMessage(string* topic, const std_msgs::Float64::ConstPtr& msg)
+{
+   stringstream ss;
+   ss << "SDI publishing message (" << msg->data << ") to topic (" << topic << ")\n";
+   ROS_WARN_NAMED("SDI_to_Sim", ss.str().c_str());
+}
+void SDI_Listener::logOutboundMessage(string* topic, const std_msgs::Int8::ConstPtr& msg)
+{
+   stringstream ss;
+   ss << "SDI publishing message (" << msg->data << ") to topic (" << topic << ")\n";
+   ROS_WARN_NAMED("SDI_to_Sim", ss.str().c_str());
+}
+
 int main(int argc, char **argv)
 {
    sdi::SDI_Listener listener;
