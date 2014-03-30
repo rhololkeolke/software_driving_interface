@@ -1,4 +1,4 @@
 <launch>
-   <node name="SDI_listener" pkg="software_driving_interface" type="SDI_Listener" />
-   <node name="SDI_talker"   pkg="software_driving_interface" type="SDI_Talker"   />
+   <node name="SDI_cmd" pkg="software_driving_interface" type="SDI_cmd" />
+   <node name="SDI_state"   pkg="software_driving_interface" type="SDI_state"   />
 </launch>

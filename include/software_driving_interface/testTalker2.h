@@ -69,6 +69,7 @@ namespace sdi
       void logMessage(const software_driving_interface::HDI_control::ConstPtr& msg);
       void logOutboundMessage(string* topic, const std_msgs::Int8::ConstPtr& msg);
       void logOutboundMessage(string* topic, const std_msgs::Float64::ConstPtr& msg);
+      void logMessage();
 
    }; // end of SDI_Listener class
 

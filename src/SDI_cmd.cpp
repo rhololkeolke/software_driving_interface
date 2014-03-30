@@ -137,6 +137,7 @@ int SDI_Listener::run(int argc, char **argv)
 		if (messageProcessed)
 		{
 			messageProcessed = false;
+			logMessage();
 
 			//	if key = on and vehicle is in neutral, publish
 			//	if key is off, publish
@@ -158,6 +159,34 @@ int SDI_Listener::run(int argc, char **argv)
 	}
 
 	return 0;
+}
+
+void SDI_Listener::logMessage()//SDI_Listener& controller)
+{
+
+	SDI_Listener& controller = *this;
+	
+	stringstream ss;
+	ss << "SDI messages sent to simulator and logged. Message contents:\n";
+	ss << "Gas Pedal %:\t" << controller.gasPedalPercentMsg.data << "\n";
+	ss << "Brake Pedal %:\t" << controller.brakePedalPercentMsg.data << "\n";
+	ss << "Steering Wheel Angle (rad):\t" << controller.wheelAngleMsg.data << "\n";
+	ss << "Hand Brake %:\t" << controller.handBrakePercentMsg.data << "\n";
+	ss << "Direction Value:\t" << controller.directionValueMsg.data << "\n";
+	ss << "Key Value:\t" << controller.keyValueMsg.data;
+
+	if (!((0 == keyValueMsg.data) || ((1 == keyValueMsg.data) && (0 == directionValueMsg.data))))
+	{
+		ss << "\t(Not sent to sim)";
+	}
+
+	ss << "\n";
+
+//	ss << "Vibration Value:\t" << controller->vibrationMsg.data << "\n";
+
+//	ROS_INFO("%s", ss.str().c_str());
+	ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
+
 }
 
 void SDI_Listener::logOutboundMessage(string* topic, const std_msgs::Float64::ConstPtr& msg)
