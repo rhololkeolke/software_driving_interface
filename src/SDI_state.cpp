@@ -1,6 +1,13 @@
 #include "software_driving_interface/testListener.h"
 #include "software_driving_interface/HDI_feedback.h"
 //#include "driving_msgs/HDI_feedback.h"
+#include "geometry_msgs/Point.h"
+#include "geometry_msgs/Pose.h"
+#include "geometry_msgs/PoseWithCovariance.h"
+#include "geometry_msgs/Vector3.h"
+#include "geometry_msgs/Twist.h"
+#include "geometry_msgs/TwistWithCovariance.h"
+#include <math.h>
 
 using namespace sdi;
 using namespace std;
@@ -8,7 +15,7 @@ using namespace std;
 void SDI_Talker::setWheelAngle(const std_msgs::Float64::ConstPtr& msg)
 {
    logMessage("wheel_angle", msg);
-
+   this->wheelAngle = msg->data;
    this->feedbackMsg.wheel_angle = msg->data;
    messageProcessed = true;
    ROS_INFO("Wheel Angle Set");
@@ -43,11 +50,13 @@ void SDI_Talker::setVibration(const std_msgs::Int8::ConstPtr& msg)
 	//	engine is on, provide vibrations
 	if (0 != msg->data)
 	{
+		this->vibration = 1.0;
 		this->feedbackMsg.vibration = 1.0;
 	}
 	//	engine is off, no vibrations
 	else
 	{
+		this->vibration = 0.0;
 		this->feedbackMsg.vibration = 0.0;
 	}
 
@@ -103,6 +112,87 @@ void SDI_Talker::logMessage(string name, const std_msgs::Int8::ConstPtr& msg)
 	ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
 }
 
+void SDI_Talker::setVelocity(const nav_msgs::Odometry::ConstPtr& msg)
+{
+// geometry_msgs/PoseWithCovariance pose
+//   geometry_msgs/Pose pose
+//      geometry_msgs/Point position
+//         float64/x
+//         float64/y
+//         float64/z
+//      geomtery_msgs/Quaternion orientation
+// geometry_msgs/TwistWithCovariance twist
+//   geometry_msgs/Twist twist
+//      geomtery_msgs/Vector3 linear
+//         float64/x
+//         float64/y
+//         float64/z
+//      geometry_msgs/Vector3 angular
+
+
+   double temp1[] = {
+      msg->pose.pose.position.x,
+      msg->pose.pose.position.y,
+      msg->pose.pose.position.z
+   };
+   this->atlasPosition = vector<double> (temp1, temp1 + sizeof(temp1) / sizeof(double));
+
+   double temp2[] = {
+      msg->twist.twist.linear.x,
+      msg->twist.twist.linear.y,
+      msg->twist.twist.linear.z
+   };
+   this->atlasLinearVelocity = vector<double> (temp2, temp2 + sizeof(temp2) / sizeof(double));
+
+   double temp3[] = {
+      msg->twist.twist.angular.x,
+      msg->twist.twist.angular.y,
+      msg->twist.twist.angular.z
+   };
+   this->atlasAngularVelocity = vector<double> (temp3, temp3 + sizeof(temp3) / sizeof(double));
+
+}
+
+void SDI_Talker::setHandWheelForce()
+{
+   this->atlasLinearVelocity;
+   this->atlasAngularVelocity;
+   this->wheelAngle;
+
+// angle restricted to MIN_ANGLE and MAX_ANGLE
+   double MIN_ANGLE = -7;
+   double MAX_ANGLE = 7;
+
+   double linearSpeed = 0;
+
+   for (vector<double>::iterator iter = atlasLinearVelocity.begin(); atlasLinearVelocity.end() != iter; iter++)
+   {
+      linearSpeed += *iter * *iter;
+   }
+
+   linearSpeed = sqrt(linearSpeed);
+
+   double angularSpeed = 0;
+
+   for (vector<double>::iterator iter = atlasAngularVelocity.begin(); atlasAngularVelocity.end() != iter; iter++)
+   {
+      angularSpeed += *iter * *iter;
+   }
+
+   angularSpeed = sqrt(angularSpeed);
+
+   this->wheelForce = linearSpeed * angularSpeed * wheelAngle;
+   this->feedbackMsg.wheel_force = wheelForce;
+}
+
+void SDI_Talker::fillFeedbackMsg()
+{
+   setHandWheelForce();
+   this->feedbackMsg.wheel_force = wheelForce;
+   this->feedbackMsg.wheel_angle = wheelAngle;
+   this->feedbackMsg.vibration = vibration;
+}
+
 int SDI_Talker::run(int argc, char **argv)
 {
 	ros::init(argc, argv, "SDI_output");
@@ -113,6 +203,7 @@ int SDI_Talker::run(int argc, char **argv)
 	//         ros::Subscriber subWheelForceState = handle.subscribe("drc_vehicle_xp900/hand_wheel_force/state", 1000, &SDI_Talker::setWheelForce, this);
 	ros::Subscriber subHandWheelState = handle.subscribe("drc_vehicle_xp900/hand_wheel/state", 1000, &SDI_Talker::setWheelAngle, this);
 	ros::Subscriber subKeyState = handle.subscribe("drc_vehicle_xp900/key/state", 1000, &SDI_Talker::setVibration, this);
+	ros::Subscriber subAtlasHipState = handle.subscribe("ground_truth_odom", 1000, &SDI_Talker::setVelocity, this);
 //	ros::Subscriber subVelocityState = handle.subscribe("drc_vehicle_xp900/velocity/state", 1000, &SDI_Talker::setVelocity, this);
 
 	// Publisher
@@ -120,10 +211,15 @@ int SDI_Talker::run(int argc, char **argv)
 
 	ros::Rate loop_rate(10);
 	ros::spinOnce();
-
+// TODO: revise so subscribers update local vars and loop generates msg values
 	int count = 0;
 	while (ros::ok())
 	{
+/*
+           fillFeedbackMsg();
+           logMessage(feedbackMsg);
+           pubHDIState.publish(feedbackMsg);
+*/
 		if (messageProcessed)
 		{
 			messageProcessed = false;
