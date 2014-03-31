@@ -1,4 +1,4 @@
-#include "software_driving_interface/testListener.h"
+#include "software_driving_interface/SDI_state.h"
 #include "software_driving_interface/HDI_feedback.h"
 //#include "driving_msgs/HDI_feedback.h"
 #include "geometry_msgs/Point.h"
@@ -12,34 +12,27 @@
 using namespace sdi;
 using namespace std;
 
+/***************************************************************
+
+	Callbacks
+
+***************************************************************/
 void SDI_Talker::setWheelAngle(const std_msgs::Float64::ConstPtr& msg)
 {
    logMessage("wheel_angle", msg);
    this->wheelAngle = msg->data;
-   this->feedbackMsg.wheel_angle = msg->data;
-   messageProcessed = true;
-   ROS_INFO("Wheel Angle Set");
+//   this->feedbackMsg.wheel_angle = msg->data;
+//   messageProcessed = true;
+//   ROS_INFO("Wheel Angle Set");
 }
 
 void SDI_Talker::setWheelForce(const std_msgs::Float64::ConstPtr& msg)
 {
    logMessage("wheel_force", msg);
-
-   this->feedbackMsg.wheel_force = msg->data;
-   messageProcessed = true;
-   ROS_INFO("Wheel Force Set");
-}
-
-void SDI_Talker::logMessage(software_driving_interface::HDI_feedback& msg)//const software_driving_interface::HDI_feedback::ConstPtr& msg)
-{
-   stringstream ss;
-
-   ss << "SDI messages sent to HDI and logged. Message Contents:\n";
-   ss << "Wheel Position:\t" << msg.wheel_angle << "\n";
-   ss << "Wheel Force:\t" << msg.wheel_force << "\n";
-   ss << "Vibration:\t" << msg.vibration << "\n";
-
-   ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
+   this->wheelForce = msg->data;
+//   this->feedbackMsg.wheel_force = msg->data;
+//   messageProcessed = true;
+//   ROS_INFO("Wheel Force Set");
 }
 
 void SDI_Talker::setVibration(const std_msgs::Int8::ConstPtr& msg)
@@ -51,17 +44,34 @@ void SDI_Talker::setVibration(const std_msgs::Int8::ConstPtr& msg)
 	if (0 != msg->data)
 	{
 		this->vibration = 1.0;
-		this->feedbackMsg.vibration = 1.0;
+//		this->feedbackMsg.vibration = 1.0;
 	}
 	//	engine is off, no vibrations
 	else
 	{
 		this->vibration = 0.0;
-		this->feedbackMsg.vibration = 0.0;
+//		this->feedbackMsg.vibration = 0.0;
 	}
 
-   messageProcessed = true;
-   ROS_INFO("Vibration set");
+//   messageProcessed = true;
+//   ROS_INFO("Vibration set");
+}
+
+/***************************************************************
+
+	Logging
+
+***************************************************************/
+void SDI_Talker::logMessage(software_driving_interface::HDI_feedback& msg)//const software_driving_interface::HDI_feedback::ConstPtr& msg)
+{
+   stringstream ss;
+
+   ss << "SDI messages sent to HDI and logged. Message Contents:\n";
+   ss << "Wheel Position:\t" << msg.wheel_angle << "\n";
+   ss << "Wheel Force:\t" << msg.wheel_force << "\n";
+   ss << "Vibration:\t" << msg.vibration << "\n";
+
+   ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
 }
 
 void SDI_Talker::logMessage(string name, const std_msgs::Float64::ConstPtr& msg)
@@ -112,6 +122,41 @@ void SDI_Talker::logMessage(string name, const std_msgs::Int8::ConstPtr& msg)
 	ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
 }
 
+void SDI_Talker::logMessage(const nav_msgs::Odometry::ConstPtr& msg)
+{
+   stringstream ss;
+
+   ss << "Sim message received by SDI and logged. Relevant message contents:\n";
+
+   // Position
+   ss << "Position (x, y, z):\t(" << msg->pose.pose.position.x;
+   ss << ", " << msg->pose.pose.position.y;
+   ss << ", " << msg->pose.pose.position.z;
+   ss << ")\n";
+  
+
+   // Linear Velocity
+   ss << "Linear velocity (x, y, z):\t(" << msg->twist.twist.linear.x;
+   ss << ", " << msg->twist.twist.linear.y;
+   ss << ", " << msg->twist.twist.linear.z;
+   ss << ")\n";
+  
+
+   // Angular Velocity
+   ss << "Angular velocity (x, y, z):\t(" << msg->twist.twist.angular.x;
+   ss << ", " << msg->twist.twist.angular.y;
+   ss << ", " << msg->twist.twist.angular.z;
+   ss << ")\n";
+
+   ROS_WARN_NAMED("Testing_WARN", ss.str().c_str());
+}
+
+/***************************************************************
+
+	Running
+
+***************************************************************/
+
 void SDI_Talker::setVelocity(const nav_msgs::Odometry::ConstPtr& msg)
 {
 // geometry_msgs/PoseWithCovariance pose
@@ -129,6 +174,7 @@ void SDI_Talker::setVelocity(const nav_msgs::Odometry::ConstPtr& msg)
 //         float64/z
 //      geometry_msgs/Vector3 angular
 
+   logMessage(msg);
 
    double temp1[] = {
       msg->pose.pose.position.x,
@@ -182,7 +228,7 @@ void SDI_Talker::setHandWheelForce()
    angularSpeed = sqrt(angularSpeed);
 
    this->wheelForce = linearSpeed * angularSpeed * wheelAngle;
-   this->feedbackMsg.wheel_force = wheelForce;
+//   this->feedbackMsg.wheel_force = wheelForce;
 }
 
 void SDI_Talker::fillFeedbackMsg()
@@ -199,37 +245,26 @@ int SDI_Talker::run(int argc, char **argv)
 	ros::NodeHandle handle;
 
 	// Subscriber
-	//         ros::Subscriber subVibrationState = handle.subscribe("drc_vehicle_xp900/vibration/state", 1000, &SDI_Talker::setVibration, this);
-	//         ros::Subscriber subWheelForceState = handle.subscribe("drc_vehicle_xp900/hand_wheel_force/state", 1000, &SDI_Talker::setWheelForce, this);
 	ros::Subscriber subHandWheelState = handle.subscribe("drc_vehicle_xp900/hand_wheel/state", 1000, &SDI_Talker::setWheelAngle, this);
 	ros::Subscriber subKeyState = handle.subscribe("drc_vehicle_xp900/key/state", 1000, &SDI_Talker::setVibration, this);
 	ros::Subscriber subAtlasHipState = handle.subscribe("ground_truth_odom", 1000, &SDI_Talker::setVelocity, this);
-//	ros::Subscriber subVelocityState = handle.subscribe("drc_vehicle_xp900/velocity/state", 1000, &SDI_Talker::setVelocity, this);
 
 	// Publisher
 	ros::Publisher pubHDIState = handle.advertise<software_driving_interface::HDI_feedback>("HDI/state", 1000);
 
 	ros::Rate loop_rate(10);
 	ros::spinOnce();
-// TODO: revise so subscribers update local vars and loop generates msg values
-	int count = 0;
+	
+        int count = 0;
 	while (ros::ok())
 	{
-/*
+
            fillFeedbackMsg();
            logMessage(feedbackMsg);
            pubHDIState.publish(feedbackMsg);
-*/
-		if (messageProcessed)
-		{
-			messageProcessed = false;
-			logMessage(feedbackMsg);
-			pubHDIState.publish(feedbackMsg);
-		}
-
-		ros::spinOnce();
-		loop_rate.sleep();
-		count++;
+           ros::spinOnce();
+           loop_rate.sleep();
+           count++;
 	}
 
 	return 0;

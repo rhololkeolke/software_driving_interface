@@ -5,8 +5,8 @@
  *      Author: democritus5589
  */
 
-#ifndef _TEST_LISTENER_H_
-#define _TEST_LISTENER_H_
+#ifndef _SDI_STATE_H_
+#define _SDI_STATE_H_
 
 #include "ros/ros.h"
 #include "std_msgs/Float64.h"

@@ -1,12 +1,12 @@
 /*
- * testTalker2.h
+ * SDI_cmd.h
  *
  *  Created on: Mar 21, 2014
  *      Author: democritus5589
  */
 
-#ifndef _TEST_TALKER_2_H_
-#define _TEST_TALKER_2_H_
+#ifndef _SDI_CMD_H_
+#define _SDI_CMD_H_
 
 #include "ros/ros.h"
 #include "std_msgs/Int8.h"
