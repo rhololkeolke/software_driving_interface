@@ -10,7 +10,7 @@ def callback(msg):
 
 def listener():
    rospy.init_node('HDI_feedback_listener')
-   rospy.Subscriber("HDI_feedback", HDI_feedback, callback)
+   rospy.Subscriber("HDI/state", HDI_feedback, callback)
    rospy.spin()
 
 
