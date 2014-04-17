@@ -1,4 +1,4 @@
 <launch>
-   <node name="SDI_cmd" pkg="software_driving_interface" type="SDI_cmd" />
-   <node name="SDI_state"   pkg="software_driving_interface" type="SDI_state"   />
+   <node name="SDI_cmd" output="screen" pkg="software_driving_interface" type="SDI_cmd" />
+   <node name="SDI_state" output="screen"  pkg="software_driving_interface" type="SDI_state"   />
 </launch>

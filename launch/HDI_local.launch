@@ -1,0 +1,4 @@
+<launch>
+   <node name="HDI_talker"   pkg="software_driving_interface" type="HDI_cmd.py"   />
+   <node name="HDI_listener" pkg="software_driving_interface" type="HDI_state.py" />
+</launch>
