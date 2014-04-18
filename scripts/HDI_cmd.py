@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import rospy
 from software_driving_interface.msg import HDI_control
+import struct
 
 def talker():
    pub = rospy.Publisher('HDI/cmd', HDI_control)
