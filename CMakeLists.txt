@@ -179,8 +179,8 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(SDI_cmd src/SDI_cmd.cpp)
 target_link_libraries(SDI_cmd ${catkin_LIBRARIES})
-add_dependencies(SDI_cmd ${catkin_EXPORTED_TARGETS})
+add_dependencies(SDI_cmd software_driving_interface_gencpp)
 
 add_executable(SDI_state src/SDI_state.cpp)
 target_link_libraries(SDI_state ${catkin_LIBRARIES})
-add_dependencies(SDI_state ${catkin_EXPORTED_TARGETS})
+add_dependencies(SDI_state software_driving_interface_gencpp)
